@@ -1,0 +1,320 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@500;700;800&display=swap");
+
+:root {
+  --bg-top: #fff2d6;
+  --bg-bottom: #ffe2b8;
+  --ink: #1f1407;
+  --brand: #ff6f00;
+  --brand-strong: #ff3d00;
+  --surface: rgba(255, 255, 255, 0.9);
+  --line: rgba(84, 52, 18, 0.15);
+  --ok: #007b64;
+  --warn: #b64100;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Nunito", "Avenir Next", "Trebuchet MS", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 10%, #fff9ec 0, transparent 35%),
+    radial-gradient(circle at 88% 25%, #ffd091 0, transparent 36%),
+    linear-gradient(170deg, var(--bg-top), var(--bg-bottom));
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 14px 50px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  line-height: 1;
+  color: #2f1a00;
+}
+
+.topbar p {
+  margin: 4px 0 0;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.parent-btn {
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #5f3500;
+  padding: 10px 16px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(255, 105, 0, 0.22);
+}
+
+.content-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.capture-card,
+.status-card,
+.chat-card,
+.admin-snapshot {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 14px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 28px rgba(94, 54, 12, 0.1);
+}
+
+.capture-header h2,
+.status-card h2,
+.chat-card h2,
+.admin-snapshot h2 {
+  margin: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.35rem;
+}
+
+.capture-header p {
+  margin: 4px 0 12px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.capture-input {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  border-radius: 16px;
+  border: 2px dashed rgba(255, 105, 0, 0.35);
+  background: linear-gradient(130deg, #fffaf2, #fff);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.capture-input input {
+  display: none;
+}
+
+.capture-input.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.capture-preview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 16px;
+  object-fit: cover;
+  max-height: 280px;
+}
+
+.status-text {
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.entity-pill {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(140deg, #fff, #ffe7c2);
+}
+
+.cta {
+  width: 100%;
+  min-height: 58px;
+  border: 0;
+  border-radius: 15px;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1rem;
+  background: linear-gradient(120deg, var(--brand), var(--brand-strong));
+  box-shadow: 0 14px 24px rgba(255, 87, 34, 0.32);
+}
+
+.messages {
+  display: grid;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.message {
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.message p {
+  margin: 0;
+}
+
+.message.child {
+  background: #fff;
+  border: 1px solid rgba(66, 42, 15, 0.12);
+}
+
+.message.object {
+  background: linear-gradient(125deg, #fff6e8, #ffe6c5);
+  border: 1px solid rgba(255, 98, 0, 0.2);
+}
+
+.message audio {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.suggestions button {
+  border: 1px solid rgba(255, 109, 0, 0.35);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #fff;
+  font-weight: 700;
+}
+
+.chat-input {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+}
+
+.chat-input input {
+  min-height: 50px;
+  border-radius: 12px;
+  border: 1px solid rgba(72, 41, 10, 0.18);
+  padding: 0 12px;
+  font-weight: 700;
+}
+
+.chat-input button {
+  min-width: 70px;
+  min-height: 50px;
+  border: 0;
+  border-radius: 12px;
+  background: #2f1a00;
+  color: #fff;
+  font-weight: 800;
+}
+
+.chat-input .mic {
+  background: linear-gradient(120deg, #007b64, #00a76f);
+}
+
+.error-text {
+  margin: 8px 0 0;
+  color: var(--warn);
+  font-weight: 800;
+}
+
+.admin-snapshot pre {
+  margin: 10px 0 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 12px;
+  background: #211103;
+  color: #ffedd0;
+  font-size: 0.8rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 11, 1, 0.48);
+  display: grid;
+  place-items: center;
+  padding: 14px;
+}
+
+.modal-card {
+  width: min(430px, 100%);
+  background: #fff7ea;
+  border-radius: 18px;
+  border: 1px solid rgba(95, 56, 18, 0.22);
+  padding: 16px;
+}
+
+.modal-card h3 {
+  margin: 0 0 4px;
+  font-family: "Baloo 2", sans-serif;
+}
+
+.modal-card label {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.modal-card input {
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(73, 41, 5, 0.25);
+  padding: 0 10px;
+}
+
+.modal-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-actions button {
+  border: 0;
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-weight: 800;
+  background: #2f1a00;
+  color: #fff;
+}
+
+.modal-actions .ghost {
+  background: #fff;
+  color: #492903;
+  border: 1px solid rgba(73, 41, 5, 0.3);
+}
+
+@media (min-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .chat-card {
+    grid-column: span 2;
+  }
+}

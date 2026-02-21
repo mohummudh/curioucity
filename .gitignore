@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+.env
+.env.*
+coverage
+*.log
+dist
+build
+apps/api/data/uploads/*
+apps/api/data/audio/*
+!apps/api/data/uploads/.gitkeep
+!apps/api/data/audio/.gitkeep
