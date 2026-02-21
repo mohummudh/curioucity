@@ -1,4 +1,4 @@
-import type { CanonicalEntity, FactPack, PersonaArchetype, PersonaProfile } from "../types/domain.js";
+import type { CanonicalEntity, FactItem, FactPack, PersonaArchetype, PersonaProfile } from "../types/domain.js";
 
 const archetypeByCategory: Record<CanonicalEntity["category"], PersonaArchetype> = {
   landmark: "wise",
@@ -17,11 +17,18 @@ const styleByArchetype: Record<PersonaArchetype, string> = {
   inventor: "clever, hands-on, and discovery-driven",
 };
 
-const hookTemplates = [
-  "Psst... want to hear a secret? I'm {label}, and I hide amazing clues!",
-  "Whoa, you found me! I'm {label}, and my story is full of surprises!",
-  "Guess what? I'm {label}, and I can blow your mind in under a minute!",
-  "Adventure alert! I'm {label}, and I've got a wow-fact ready for you!",
+const objectHookTemplates = [
+  "Psst... want to hear a secret? I'm {name}!",
+  "Whoa, you found me! I'm {name}. Ready for a surprise?",
+  "Guess what? I'm {name}. Wanna hear my wildest fact?",
+  "Adventure alert! I'm {name}. Ready to be amazed?",
+];
+
+const characterHookTemplates = [
+  "Psst... it's really me, {name}! Want my biggest secret?",
+  "You spotted me! I'm {name}. Wanna know why people still talk about me?",
+  "Time-travel moment: I'm {name}. Ready for a jaw-dropping clue?",
+  "History hook: I'm {name}. Want to know what changed everything for me?",
 ];
 
 const curiosityQuestionsByCategory: Record<CanonicalEntity["category"], string[]> = {
@@ -34,8 +41,9 @@ const curiosityQuestionsByCategory: Record<CanonicalEntity["category"], string[]
     "How do you think I change between seasons?",
   ],
   statue: [
-    "If you made a statue, who or what would it honor?",
-    "What pose would your statue make to tell a story?",
+    "What part of my story do you want to explore next?",
+    "Want to know the one thing people get wrong about me?",
+    "If you made a monument about history, who would it feature?",
   ],
   electronics: [
     "Which sensor would you add to invent something new?",
@@ -55,9 +63,36 @@ const curiosityQuestionsByCategory: Record<CanonicalEntity["category"], string[]
   ],
 };
 
+const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const toFirstPersonFact = (fact: FactItem | undefined, entity: CanonicalEntity): string => {
+  if (!fact) {
+    return `${entity.roleplayName} has a story worth exploring.`;
+  }
+
+  let rewritten = fact.claim;
+  const candidates = [entity.roleplayName, entity.researchSubject, entity.label].filter(Boolean);
+
+  for (const candidate of candidates) {
+    rewritten = rewritten.replace(new RegExp(`\\b${escapeRegex(candidate)}\\b`, "gi"), "I");
+  }
+
+  rewritten = rewritten
+    .replace(/\bthe\s+bust\s+of\s+me\b/gi, "me")
+    .replace(/\bthe\s+statue\s+of\s+me\b/gi, "me")
+    .replace(/\bthe\s+portrait\s+of\s+me\b/gi, "me");
+
+  return rewritten;
+};
+
 export class PersonaService {
   buildPersona(entity: CanonicalEntity): PersonaProfile {
-    const voiceArchetype = archetypeByCategory[entity.category] ?? "adventurous";
+    let voiceArchetype = archetypeByCategory[entity.category] ?? "adventurous";
+
+    if (entity.roleplayMode === "as_character" && entity.category === "statue") {
+      voiceArchetype = "wise";
+    }
+
     return {
       voiceArchetype,
       speakingStyle: styleByArchetype[voiceArchetype],
@@ -66,31 +101,36 @@ export class PersonaService {
   }
 
   buildHook(entity: CanonicalEntity): string {
-    const template = hookTemplates[Math.floor(Math.random() * hookTemplates.length)];
-    return template.replace("{label}", entity.label);
+    const templates = entity.roleplayMode === "as_character" ? characterHookTemplates : objectHookTemplates;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+    return template.replace("{name}", entity.roleplayName);
   }
 
   buildFirstReply(input: { factPack: FactPack; hook: string }): string {
-    const [first, second] = input.factPack.facts;
-    const facts = [first?.claim, second?.claim].filter(Boolean);
+    const firstFact = toFirstPersonFact(input.factPack.facts[0], input.factPack.entity);
+    const secondFact = toFirstPersonFact(input.factPack.facts[1], input.factPack.entity);
     const question = this.getCuriosityQuestion(input.factPack.entity);
 
-    const parts = [input.hook];
-    for (const fact of facts) {
-      parts.push(fact as string);
-    }
-    parts.push(question);
+    const identityLine =
+      input.factPack.entity.roleplayMode === "as_character"
+        ? `I'm ${input.factPack.entity.roleplayName}, and yep, this is my real story.`
+        : `I'm ${input.factPack.entity.roleplayName}, and here's what makes me amazing.`;
 
-    return parts.join(" ");
+    return [input.hook, identityLine, firstFact, secondFact, question].join(" ");
   }
 
   buildFallbackReply(input: { factPack: FactPack; userQuestion: string; usedFactIndexes: Set<number> }): string {
     const freshFact = this.pickFreshFact(input.factPack, input.usedFactIndexes);
     const question = this.getCuriosityQuestion(input.factPack.entity);
 
+    const intro =
+      input.factPack.entity.roleplayMode === "as_character"
+        ? `Great question! I'm ${input.factPack.entity.roleplayName}.`
+        : `Great question! I'm ${input.factPack.entity.roleplayName}.`;
+
     return [
-      `Great question! As ${input.factPack.entity.label}, here's something awesome:`,
-      freshFact?.claim ?? input.factPack.summary,
+      intro,
+      `Here's something awesome: ${toFirstPersonFact(freshFact, input.factPack.entity)}`,
       `You asked: "${input.userQuestion}" and I love that curiosity.`,
       question,
     ].join(" ");

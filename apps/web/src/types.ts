@@ -18,6 +18,10 @@ export type CanonicalEntity = {
   label: string;
   category: EntityCategory;
   confidence: number;
+  detectedLabel?: string;
+  researchSubject?: string;
+  roleplayName?: string;
+  roleplayMode?: "as_object" | "as_character";
 };
 
 export type AnalysisResult = {

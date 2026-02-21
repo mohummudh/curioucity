@@ -62,7 +62,12 @@ npm run dev
 ## Notes on behavior
 
 - If Gemini is unavailable, the app falls back to category-based detection/research templates.
+- Depiction labels (for example, `bust/statue/portrait of X`) are normalized to character identity so research and narration roleplay as `X`.
 - Voice provider order is controlled by `VOICE_PROVIDER` (`gemini`, `elevenlabs`, or `auto`), default `gemini`.
+- Opening/follow-up prompts are tuned for child-friendly language, short spoken sentences, and curiosity hooks.
+- Gemini default voice profile is tuned for warmer narration (`Leda`/`Kore`/`Aoede`/`Orus` by archetype), configurable in `.env`.
+- Gemini TTS tries `GEMINI_TTS_MODEL` then `GEMINI_TTS_FALLBACK_MODEL` automatically if a model returns 404.
+- Leave `ELEVENLABS_VOICE_*` blank to use `ELEVENLABS_DEFAULT_VOICE_ID`; blank custom IDs no longer break requests.
 - External model calls are timeout-limited with `GEMINI_REQUEST_TIMEOUT_MS` and `VOICE_REQUEST_TIMEOUT_MS` to avoid stuck analyses.
 - If selected server-side TTS providers are unavailable, text is still returned and browser speech synthesis is used on the client.
 - The app enforces strict child-safe moderation before and after generation.

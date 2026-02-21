@@ -104,7 +104,7 @@ export class ConversationService {
       followupSuggestions: [
         personaService.getCuriosityQuestion(conversation.entity),
         "Want another surprising fact?",
-        `Ask me how ${conversation.entity.label} changes over time!`,
+        `Ask me how ${conversation.entity.roleplayName} changes over time!`,
       ],
     };
   }

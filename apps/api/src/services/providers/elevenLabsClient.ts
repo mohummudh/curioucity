@@ -16,7 +16,14 @@ export class ElevenLabsClient {
       return null;
     }
 
-    const voiceId = input.voiceId ?? env.defaultVoiceId;
+    const requestedVoiceId = input.voiceId?.trim();
+    const fallbackVoiceId = env.defaultVoiceId?.trim();
+    const voiceId = requestedVoiceId || fallbackVoiceId;
+    if (!voiceId) {
+      logger.warn("ElevenLabs voice id missing; skipping ElevenLabs synthesis");
+      return null;
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), env.voiceRequestTimeoutMs);
 
@@ -33,9 +40,9 @@ export class ElevenLabsClient {
           text: input.text,
           model_id: env.elevenLabsModel,
           voice_settings: {
-            stability: 0.45,
-            similarity_boost: 0.65,
-            style: 0.65,
+            stability: 0.35,
+            similarity_boost: 0.78,
+            style: 0.82,
             use_speaker_boost: true,
           },
         }),

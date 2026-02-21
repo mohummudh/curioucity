@@ -5,8 +5,12 @@ const factPack = {
   entity: {
     entityId: "entity-bridge",
     label: "Golden Gate Bridge",
+    detectedLabel: "Golden Gate Bridge",
     category: "landmark" as const,
     confidence: 0.88,
+    researchSubject: "Golden Gate Bridge",
+    roleplayName: "Golden Gate Bridge",
+    roleplayMode: "as_object" as const,
   },
   facts: [
     {
@@ -32,7 +36,7 @@ describe("personaService", () => {
     const text = personaService.buildFirstReply({ factPack, hook });
 
     expect(text).toContain(hook);
-    expect(text).toContain("international orange");
+    expect(text).toContain("I'm Golden Gate Bridge");
     expect(text).toMatch(/\?/);
   });
 });

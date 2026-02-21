@@ -12,11 +12,16 @@ export class VisionService {
     const imageModeration = moderationService.moderateImageLabel(input.sessionId, entity.label);
 
     if (imageModeration.verdict === "block") {
+      const mystery = imageModeration.transformedText ?? "mystery object";
       return {
         entityId: "entity-mystery-object",
-        label: imageModeration.transformedText ?? "mystery object",
+        label: mystery,
+        detectedLabel: mystery,
         category: "other",
         confidence: 0.2,
+        researchSubject: mystery,
+        roleplayName: mystery,
+        roleplayMode: "as_object",
       };
     }
 

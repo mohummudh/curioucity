@@ -5,6 +5,7 @@ import { analyticsService } from "./analyticsService.js";
 import { ingestionService } from "./ingestionService.js";
 import { moderationService } from "./moderationService.js";
 import { personaService } from "./personaService.js";
+import { geminiClient } from "./providers/geminiClient.js";
 import { researchService } from "./researchService.js";
 import { uploadService } from "./uploadService.js";
 import { visionService } from "./visionService.js";
@@ -81,7 +82,13 @@ export class AnalysisService {
       const factPack = await researchService.getFactPack(entity);
       const persona = personaService.buildPersona(entity);
       const hook = personaService.buildHook(entity);
-      const initialText = personaService.buildFirstReply({ factPack, hook });
+      const initialText =
+        (await geminiClient.generateOpeningReply({
+          entity,
+          hook,
+          summary: factPack.summary,
+          candidateFacts: factPack.facts.slice(0, 3),
+        })) ?? personaService.buildFirstReply({ factPack, hook });
 
       const moderated = moderationService.moderateOutput(existing.sessionId, initialText);
       const safeText = moderated.transformedText ?? initialText;

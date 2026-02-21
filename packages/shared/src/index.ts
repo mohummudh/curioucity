@@ -7,11 +7,17 @@ export type EntityCategory =
   | "animal"
   | "other";
 
+export type RoleplayMode = "as_object" | "as_character";
+
 export type CanonicalEntity = {
   entityId: string;
   label: string;
   category: EntityCategory;
   confidence: number;
+  detectedLabel?: string;
+  researchSubject: string;
+  roleplayName: string;
+  roleplayMode: RoleplayMode;
 };
 
 export type FactItem = {

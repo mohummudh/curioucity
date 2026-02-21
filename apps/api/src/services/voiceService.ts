@@ -7,11 +7,16 @@ import type { PersonaArchetype } from "../types/domain.js";
 import { elevenLabsClient } from "./providers/elevenLabsClient.js";
 import { geminiTtsClient } from "./providers/geminiTtsClient.js";
 
+const nonEmpty = (value: string | undefined): string | undefined => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+};
+
 const elevenLabsVoiceByArchetype = (archetype: PersonaArchetype): string | undefined => {
-  if (archetype === "playful") return env.voicePlayful;
-  if (archetype === "wise") return env.voiceWise;
-  if (archetype === "adventurous") return env.voiceAdventurous;
-  if (archetype === "inventor") return env.voiceInventor;
+  if (archetype === "playful") return nonEmpty(env.voicePlayful);
+  if (archetype === "wise") return nonEmpty(env.voiceWise);
+  if (archetype === "adventurous") return nonEmpty(env.voiceAdventurous);
+  if (archetype === "inventor") return nonEmpty(env.voiceInventor);
   return undefined;
 };
 
@@ -21,6 +26,32 @@ const geminiVoiceByArchetype = (archetype: PersonaArchetype): string => {
   if (archetype === "adventurous") return env.geminiTtsVoiceAdventurous;
   if (archetype === "inventor") return env.geminiTtsVoiceInventor;
   return env.geminiTtsVoiceDefault;
+};
+
+const styleByArchetype = (archetype: PersonaArchetype): string => {
+  if (archetype === "playful") {
+    return "playful, warm, cheerful, and curious";
+  }
+
+  if (archetype === "wise") {
+    return "warm storyteller, calm confidence, and wonder-filled";
+  }
+
+  if (archetype === "adventurous") {
+    return "excited explorer with lively pacing and vivid emphasis";
+  }
+
+  return "friendly inventor voice, bright, clear, and enthusiastic";
+};
+
+const normalizeForSpeech = (text: string): string => {
+  return text
+    .replace(/\s+/g, " ")
+    .replace(/\s*[:;]\s*/g, ". ")
+    .replace(/\s*\(\s*/g, ", ")
+    .replace(/\s*\)\s*/g, " ")
+    .replace(/\s+([,.!?])/g, "$1")
+    .trim();
 };
 
 const providerOrder = (): Array<"gemini" | "elevenlabs"> => {
@@ -47,18 +78,20 @@ export class VoiceService {
     archetype: PersonaArchetype;
   }): Promise<{ audioId: string; streamUrl: string } | null> {
     await this.ensureDirs();
+    const spokenText = normalizeForSpeech(input.text);
 
     let result: { audio: Buffer; contentType: string } | null = null;
 
     for (const provider of providerOrder()) {
       if (provider === "gemini") {
         result = await geminiTtsClient.synthesize({
-          text: input.text,
+          text: spokenText,
           voiceName: geminiVoiceByArchetype(input.archetype),
+          styleInstruction: styleByArchetype(input.archetype),
         });
       } else {
         result = await elevenLabsClient.synthesize({
-          text: input.text,
+          text: spokenText,
           voiceId: elevenLabsVoiceByArchetype(input.archetype),
         });
       }
